@@ -1,0 +1,22 @@
+# -*- mode: shell-script -*-
+
+# Private settings of environment variables to reflect differences
+# between private and work environment.
+#
+# This file will be sourced from interactive shells from ~/.bashrc
+#
+
+# Test for internet proxy and set up corresponding variables
+proxy=$(wget -q -O - http://wpad/wpad.dat | grep '"PROXY' | \
+	    tail -n 1 | cut -d '"' -f 2 | cut -d ' ' -f 2)
+if [ -n "${proxy}" ]; then
+    proxy_host=$(echo ${proxy} | cut -d ':' -f1)
+    proxy_port=$(echo ${proxy} | cut -d ':' -f2)
+    # for Java/JDK
+    JAVA_OPTS+=" -Dhttps.proxyHost=${proxy_host}"
+    JAVA_OPTS+=" -Dhttps.proxyPort=${proxy_port}"
+    # for Emacs/Melpa
+    export https_proxy=${proxy}
+    export JAVA_OPTS
+    unset proxy proxy_host proxy_port
+fi
