@@ -12,4 +12,13 @@ shell functions.
 General setting in `~/.gitconfig`.
 
 Remark: Update Github Token. 
-	
+
+# Branches
+
+There different branches for the following enviroments:
+
++ main
++ cygwin
++ work
++ linux
+
