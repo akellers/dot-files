@@ -1,1 +1,16 @@
-/*~
+Downloads
+bin/
+.emacs.d/
+.bash_history
+.lesshst
+.inputrc
+tmp/
+git/
+/.python_history
+/.ipython/
+/.serverauth.*
+/.Xauthority
+/.config/
+/.dbus/
+/.xsession-errors
+/dev/

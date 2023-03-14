@@ -1,17 +1,6 @@
+# This is Git's per-user configuration file.
 [user]
-	email = andreas.kellers@gmail.com
-	name = Andreas Kellers
-[push]
-	default = simple
-[http]
-	sslVerify = false
-[gui]
-	fontui = -family \"Bitstream Vera Sans\" -size 10 -weight normal -slant roman -underline 0 -overstrike 0
-[url "https://"]
-	insteadOf = git://
-[init]
-	defaultBranch = main
-[credential]
-	helper = cache
-[url "https://akellers:<INSERT GITHUB TOKEN HERE>@github.com/"]
-	insteadOf = https://github.com/
+# Please adapt and uncomment the following lines:
+	name = KLRA
+	email = andreas.kellers@kfw.de
+

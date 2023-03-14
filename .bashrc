@@ -26,48 +26,15 @@
 # If not running interactively, don't do anything
 [[ "$-" != *i* ]] && return
 
-#
-# USER Modifications
-#
-
-# Set user defined locale
-export LANG=en_US.UTF-8
-
-# Use simplified prompt under dumb terminals
-if [ "${TERM}" = "dumb" -o "${TERM}" = "eterm-color" ] ; then
-    PS1='\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ '
-fi
-# default is '\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ '
-
-# Set PATH
-export PATH=/usr/local/bin:/usr/bin:/usr/lib/lapack
-
-# Set PATH so it includes user's private bin if it exists
-if [ -d "${HOME}/bin" ] ; then
-  PATH="${HOME}/bin:${PATH}"
-fi
-
-# Set PATH so it includes /usr/local/lib if it exists
-if [ -d "/usr/local/lib" ]; then
-   PATH=${PATH}:/usr/local/lib
-fi
-
-# Use separate file for aliases
-if [ -f "${HOME}/.bash_aliases" ]; then
-  source "${HOME}/.bash_aliases"
-fi
-
-# Use separate file for functions
-if [ -f "${HOME}/.bash_functions" ]; then
-  source "${HOME}/.bash_functions"
-fi
-
-# Source private modifications and settings
-if [ -f "${HOME}/.bash_private" ]; then
-  source "${HOME}/.bash_private"
-fi
-
 # Shell Options
+if [ "$TERM" = "xterm" ]; then
+    export PS1="\[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
+else
+    export PS1="\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$ "
+fi
+# \[\e]0;\w\a\]\n\[\e[32m\]\u@\h \[\e[33m\]\w\[\e[0m\]\n\$
+export LANG=en_GB.utf-8 # export LANG=$(locale -uU)
+export PATH=/usr/local/bin:/usr/bin
 #
 # See man bash for more options...
 #
@@ -131,18 +98,30 @@ fi
 # Misc :)
 # alias less='less -r'                          # raw control characters
 # alias whence='type -a'                        # where, of a sort
-# alias grep='grep --color'                     # show differences in colour
+alias grep='grep --color'                     # show differences in colour
 # alias egrep='egrep --color=auto'              # show differences in colour
 # alias fgrep='fgrep --color=auto'              # show differences in colour
 #
 # Some shortcuts for different directory listings
-# alias ls='ls -hF --color=tty'                 # classify files in colour
+alias ls='ls -hF --group-directories-first --color=tty'                 # classify files in colour
 # alias dir='ls --color=auto --format=vertical'
 # alias vdir='ls --color=auto --format=long'
-# alias ll='ls -l'                              # long list
-# alias la='ls -A'                              # all but . and ..
-# alias l='ls -CF'                              #
+alias ll='ls -l'                              # long list
+alias la='ls -A'                              # all but . and ..
+alias l='ls -CF'                              #
+# Use python3.7 as default
+alias python='python3.7'
+alias ipython='ipython3.7'
+# Start X Server
+alias X='XWin :0 -multiwindow > /dev/null 2>&1 &'
 
+# Some Functions
+#
+#
+pdfopen ()
+{
+    /cygdrive/c/Program\ Files\ \(x86\)/Adobe/Acrobat\ Reader\ DC/Reader/AcroRd32 "`cygpath --windows $*`"
+}
 # Umask
 #
 # /etc/profile sets 022, removing write perms to group + others.
@@ -161,10 +140,10 @@ fi
 # Some example functions:
 #
 # a) function settitle
-# settitle ()
-# {
-#   echo -ne "\e]2;$@\a\e]1;$@\a";
-# }
+settitle ()
+{
+  echo -ne "\e]2;$@\a\e]1;$@\a";
+}
 #
 # b) function cd_func
 # This function defines a 'cd' replacement function capable of keeping,
