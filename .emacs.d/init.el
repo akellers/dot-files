@@ -1,0 +1,242 @@
+;;; Package --- EMACS Configuration (init.el)
+
+;;; Commentary:
+
+;; Enable directional window-selection
+;;;; Code:
+(windmove-default-keybindings 'meta)
+
+;; Enable package and initialize
+(require 'package)
+(package-initialize)
+
+;; Install use-package if not already installed
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(require 'use-package)
+
+;; Enable nice rendering of diagnostics like compile errors.
+(use-package flycheck
+  :init (global-flycheck-mode))
+
+;; Enable package treemacs
+(use-package treemacs
+  :ensure t
+  :defer t
+  :config
+  (setq treemacs-no-png-images t
+	treemacs-width 24)
+  :bind ("C-c t" . treemacs))
+
+;; Enable scala-mode for highlighting, indentation and motion commands
+(use-package scala-mode
+  :interpreter ("scala" . scala-mode))
+
+;; Enable sbt mode for executing sbt commands
+(use-package sbt-mode
+  :commands sbt-start sbt-command
+  :config
+  ;; WORKAROUND: https://github.com/ensime/emacs-sbt-mode/issues/31
+  ;; allows using SPACE when in the minibuffer
+  (substitute-key-definition
+   'minibuffer-complete-word
+   'self-insert-command
+   minibuffer-local-completion-map)
+   ;; sbt-supershell kills sbt-mode:  https://github.com/hvesalai/emacs-sbt-mode/issues/152
+  (setq sbt:program-options '("-Dsbt.supershell=false")))
+
+;; Install lsp-mode for scala
+(use-package lsp-mode
+  :ensure t
+  :defer t
+  :commands (lsp lsp-deferred)
+  :init (setq lsp-keymap-prefix "C-c l")
+  ;; Optional - enable lsp-mode automatically in scala files
+  ;; You could also swap out lsp for lsp-deffered in order to defer loading
+  :hook
+    (scala-mode . lsp)
+    (lsp-mode . lsp-lens-mode)
+    (python-mode . lsp-deferred)
+  :config
+  ;; Uncomment following section if you would like to tune lsp-mode performance according to
+  ;; https://emacs-lsp.github.io/lsp-mode/page/performance/
+  ;; (setq gc-cons-threshold 100000000) ;; 100mb
+  ;; (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  ;; (setq lsp-idle-delay 0.500)
+  ;; (setq lsp-log-io nil)
+  ;; (setq lsp-completion-provider :capf)
+  ;; (setq lsp-prefer-flymake nil)
+  )
+
+;; Add metals backend for lsp-mode
+(use-package lsp-metals)
+
+;; Enable nice rendering of documentation on hover
+;;   Warning: on some systems this package can reduce your emacs responsiveness significally.
+;;   (See: https://emacs-lsp.github.io/lsp-mode/page/performance/)
+;;   In that case you have to not only disable this but also remove from the packages since
+;;   lsp-mode can activate it automatically.
+(use-package lsp-ui)
+
+;;
+(use-package lsp-treemacs
+  :init
+  (lsp-treemacs-sync-mode 1))
+
+;; lsp-mode supports snippets, but in order for them to work you need to use yasnippet
+;; If you don't want to use snippets set lsp-enable-snippet to nil in your lsp-mode settings
+;; to avoid odd behavior with snippets and indentation
+(use-package yasnippet)
+
+;; Use company-capf as a completion provider.
+(use-package company
+  :ensure t
+  :defer t
+  :diminish
+  :hook (
+	 (scala-mode . company-mode)
+	 (text-mode . company-mode)
+	 (prog-mode . company-mode))
+  :config
+  (setq lsp-completion-provider :capf
+	company-dabbrev-other-buffers t
+	company-dabbrev-code-other-buffers t))
+
+;; Posframe is a pop-up tool that must be manually installed for dap-mode
+(use-package posframe)
+
+;; Use the Debug Adapter Protocol for running tests and debugging
+(use-package dap-mode
+  :hook
+  (lsp-mode . dap-mode)
+  (lsp-mode . dap-ui-mode))
+
+;; Language server for Python
+(use-package lsp-pyright
+  :ensure t
+  :defer t
+  ;; :config
+  ;; (setq lsp-clients-python-library-directories '("/usr/" "~/miniconda3/pkgs"))
+  ;; (setq lsp-pyright-disable-language-service nil
+  ;;	lsp-pyright-disable-organize-imports nil
+  ;;	lsp-pyright-auto-import-completions t
+  ;;	lsp-pyright-use-library-code-for-types t
+  ;;	lsp-pyright-venv-path "~/miniconda3/envs")
+  :hook ((python-mode . (lambda ()
+			  (require 'lsp-pyright) (lsp-deferred)))))
+;; Use Python package
+(use-package python
+  :ensure t
+  :config
+  ;; Remove guess indent python message
+  (setq python-indent-guess-indent-offset-verbose nil)
+  ;; Use IPython when available or fall back to regular Python
+  (cond
+   ((executable-find "ipython3")
+    (progn
+      (setq python-shell-buffer-name "IPython")
+      (setq python-shell-interpreter "ipython3")
+      (setq python-shell-interpreter-args "-i --simple-prompt")))
+   ((executable-find "python3")
+    (setq python-shell-interpreter "python3"))
+   ((executable-find "python2")
+    (setq python-shell-interpreter "python2"))
+   (t
+    (setq python-shell-interpreter "python"))))
+
+
+;; Package PARI
+(use-package pari
+  :load-path "/usr/local/share/emacs/site-lisp/pari"
+  :mode ("\\.gp\\'" . gp-script-mode)
+  ;; :interpreter ("gp" . gp-mode)
+  :init
+  (autoload 'gp-mode "pari" nil t)
+  (autoload 'gp-script-mode "pari" nil t)
+  (autoload 'gp "pari" nil t)
+  (autoload 'gpman "pari" nil t)
+  :custom
+  (gp-language 'english))
+
+;; Package MAGIT
+(use-package magit
+  :bind (([f10] . magit-status)))
+
+;; Package MINIMAP
+(use-package minimap
+  :init
+  (setq minimap-major-modes '(prog-mode))
+  (setq minimap-window-location 'right))
+
+;; Package ORG
+(use-package org
+  :init
+  (setq
+   org-list-allow-alphabetical t
+   org-src-fontify-natively t
+   org-startup-folded nil
+   org-support-shift-select t
+   org-confirm-babel-evaluate nil
+   org-adapt-indentation t
+   org-export-backends (quote
+			(ascii html latex md odt))
+   org-babel-load-languages (quote
+			     ((emacs-lisp . t)
+			      (dot . t)
+			      (python . t)
+			      (shell . t)
+			      (latex . t)))
+   org-latex-listings (quote minted)
+   org-latex-minted-langs (quote
+			   ((emacs-lisp "common-lisp")
+			    (python "python")
+			    (dot "dot")
+			    (shell-script "bash")
+			    (scala "scala")))
+   org-latex-minted-options (quote
+			     (("frame" "single")
+			      ("framesep" "2mm")
+			      ("breaklines" "true")
+			      ("fontsize" "\\footnotesize")))
+   org-latex-packages-alist (quote
+			     (("" "minted" t)
+			      ("" "tikz" t)))
+   org-latex-pdf-process (quote
+			  ("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f" "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))))
+
+;;
+;; CUSTOMIZSATIONS
+;;
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes '(wombat))
+ '(default-frame-alist '((alpha . 98) (height . 55) (width . 175)))
+ '(global-hi-lock-mode t)
+ '(indicate-empty-lines t)
+ '(inhibit-startup-screen t)
+ '(ispell-dictionary nil)
+ '(minimap-major-modes '(prog-mode org-mode))
+ '(minimap-mode t)
+ '(minimap-window-location 'right)
+ '(package-archives
+   '(("gnu" . "https://elpa.gnu.org/packages/")
+     ("melpa" . "https://melpa.org/packages/")))
+ '(package-selected-packages
+   '(csv-mode lsp-pyright treemacs all-the-icons minimap sbt-mode lsp-metals dap-mode lsp-treemacs company flycheck lsp-ui lsp-mode yasnippet use-package org magit))
+ '(show-paren-mode t)
+ '(tool-bar-mode nil)
+ '(use-dialog-box nil)
+ '(use-file-dialog nil)
+ '(use-package-always-defer t)
+ '(use-package-always-ensure t))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(default ((t (:family "DejaVu Sans Mono" :foundry "PfEd" :slant normal :weight normal :height 90 :width normal)))))
