@@ -13,3 +13,6 @@ General setting in `~/.gitconfig`.
 
 Remark: Update Github Token. 
 	
+## files for `emacs`:
+
+General configuration in `~/.emacs.d/init.el`
