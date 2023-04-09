@@ -1,4 +1,4 @@
-;;; Package --- EMACS Configuration (init.el)
+;;; package --- EMACS Configuration (init.el)
 
 ;;; Commentary:
 
@@ -149,7 +149,7 @@
 
 ;; Package PARI
 (use-package pari
-  :load-path "/usr/local/share/emacs/site-lisp/pari"
+  :load-path "~/.emacs.d/pari"
   :mode ("\\.gp\\'" . gp-script-mode)
   ;; :interpreter ("gp" . gp-mode)
   :init
