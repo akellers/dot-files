@@ -227,7 +227,7 @@
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
  '(package-selected-packages
-   '(csv-mode lsp-pyright treemacs all-the-icons minimap sbt-mode lsp-metals dap-mode lsp-treemacs company flycheck lsp-ui lsp-mode yasnippet use-package org magit))
+   '(cdlatex csv-mode lsp-pyright treemacs all-the-icons minimap sbt-mode lsp-metals dap-mode lsp-treemacs company flycheck lsp-ui lsp-mode yasnippet use-package org magit))
  '(show-paren-mode t)
  '(tool-bar-mode nil)
  '(use-dialog-box nil)
