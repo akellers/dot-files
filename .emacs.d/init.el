@@ -171,7 +171,7 @@
 ;; Package MINIMAP
 (use-package minimap
   :init
-  (setq minimap-major-modes '(prog-mode))
+  ;; (setq minimap-major-modes '(prog-mode))
   (setq minimap-window-location 'right))
 
 ;; Package ORG
@@ -224,9 +224,6 @@
  '(indicate-empty-lines t)
  '(inhibit-startup-screen t)
  '(ispell-dictionary nil)
- '(minimap-major-modes '(prog-mode org-mode))
- '(minimap-mode t)
- '(minimap-window-location 'right)
  '(package-archives
    '(("gnu" . "https://elpa.gnu.org/packages/")
      ("melpa" . "https://melpa.org/packages/")))
