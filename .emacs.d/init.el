@@ -2,9 +2,13 @@
 
 ;;; Commentary:
 
-;; Enable directional window-selection
 ;;;; Code:
+
+;; Enable directional window-selection
 (windmove-default-keybindings 'meta)
+
+;; Use always 'y-or-n-p instead of 'yes-or-no-p
+(fset 'y-or-n-p 'yes-or-no-p)
 
 ;; Enable package and initialize
 (require 'package)
